@@ -22,7 +22,7 @@ pip install fastapi
 - uvicorn\[standard\]
 
 ```sh
-pip install "uvicorn\[standard\]"
+pip install "uvicorn[standard]"
 ```
 
 ## Run the project

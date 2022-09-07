@@ -15,11 +15,15 @@ Install the required packages
 
 - fastapi
 
-  pip install fastapi
+```sh
+pip install fastapi
+```
 
 - uvicorn\[standard\]
 
-  pip install "uvicorn\[standard\]"
+```sh
+pip install "uvicorn\[standard\]"
+```
 
 ## Run the project
 
@@ -29,10 +33,14 @@ Once setup is complete, run the server and client in two different CLIs.
 
 Start the server in development mode:
 
-    uvicorn server:app --reload
+```sh
+  uvicorn server:app --reload
+```
 
 ### Client
 
 Run the client:
 
-    python3 client.py
+```sh
+  python3 client.py
+```

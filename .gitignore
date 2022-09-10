@@ -1,1 +1,3 @@
-__pycache__/
+backend/node_modules
+backend/config/config.env
+frontend/node_modules

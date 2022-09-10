@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta http-equiv="Content-Security-Policy" content="default-src *;
+      img-src * 'self' data: https: http:;
+      script-src 'self' 'unsafe-inline' 'unsafe-eval' *;
+      style-src  'self' 'unsafe-inline' *">
+
+  <title>Confirm Email</title>
+
+  <!-- Bootstrap CSS -->
+  <link href="/css/bootstrap.min.css" rel="stylesheet">
+
+
+  <style>
+    @media (min-width: 768px) {
+      .bd-placeholder-img-lg {
+        font-size: 3.5rem;
+      }
+    }
+
+    html,
+    body {
+      height: 100%;
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      padding-top: 40px;
+      padding-bottom: 40px;
+      background-color: #f5f5f5;
+    }
+
+    .form-signin {
+      width: 100%;
+      max-width: 330px;
+      padding: 15px;
+      margin: auto;
+    }
+  </style>
+</head>
+
+<body class="text-center">
+
+  <main class="form-signin">
+
+    <!-- Your logo -->
+    <div class="d-flex justify-content-center">
+      <div class="spinner-border" role="status">
+        <span class="visually-hidden d-none">Loading...</span>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Bootstrap JS -->
+  <script type="text/javascript" href="/js/bootstrap.bundle.js"></script>
+
+  <script>
+    const successHTML = `
+    <svg class="mb-4" xmlns="http://www.w3.org/2000/svg" width="150" height="150" fill="#198754"
+      class="bi bi-check-circle-fill" viewBox="0 0 16 16">
+      <path
+        d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
+    </svg>
+
+    <h1 class="h3 mb-3 fw-normal">Success!</h1>
+    <p>Your account was verified successfully. You can now login to your account.</p>
+    `
+
+    const token = new URL(window.location).searchParams.get("token")
+
+    const protocol = window.location.protocol
+    const host = window.location.host
+
+    fetch(`${protocol}://${host}/api/v1/auth/confirmemail?token=${token}`).then((res) => {
+      return res.json()
+    }).then((data) => {
+      if (data.success) {
+        document.getElementsByTagName("main")[0].innerHTML = successHTML
+      } else {
+        window.location.href = "/somethingWentWrong.html"
+      }
+    })
+  </script>
+</body>
+
+</html>

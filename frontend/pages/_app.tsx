@@ -3,6 +3,9 @@ import Head from "next/head";
 import { MantineProvider } from "@mantine/core";
 import "../styles/globals.css";
 import useAuth from "../components/Auth";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+export const queryClient = new QueryClient();
 
 export default function App(props: AppProps) {
   const { Component, pageProps } = props;
@@ -10,7 +13,7 @@ export default function App(props: AppProps) {
   useAuth();
 
   return (
-    <>
+    <QueryClientProvider client={queryClient}>
       <Head>
         <title>Student Management System</title>
         <meta
@@ -32,6 +35,6 @@ export default function App(props: AppProps) {
       >
         <Component {...pageProps} />
       </MantineProvider>
-    </>
+    </QueryClientProvider>
   );
 }

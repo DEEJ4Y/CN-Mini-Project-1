@@ -17,6 +17,13 @@ const ClassSchema = new mongoose.Schema(
         default: [],
       },
     ],
+    invitedTeachers: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        default: [],
+      },
+    ],
     students: [
       {
         type: mongoose.Schema.Types.ObjectId,
@@ -24,8 +31,15 @@ const ClassSchema = new mongoose.Schema(
         default: [],
       },
     ],
+    invitedStudents: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        default: [],
+      },
+    ],
   },
-  { timestamps: true }
+  { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
 
 module.exports = mongoose.model("Class", ClassSchema);

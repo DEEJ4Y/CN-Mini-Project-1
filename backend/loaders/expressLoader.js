@@ -17,11 +17,14 @@ const morgan = require("morgan");
 const fileupload = require("express-fileupload");
 const errorHandler = require("../middleware/error");
 
+// Models
+const User = require("../models/User");
+const Class = require("../models/Class");
+
 // Bring in route files
 const auth = require("../routes/auth");
 const authClient = require("../routes/authClient");
-const User = require("../models/User");
-const Class = require("../models/Class");
+const classRouter = require("../routes/class");
 
 module.exports = (app) => {
   // cors
@@ -72,9 +75,10 @@ module.exports = (app) => {
   // Mount routers
   app.use("/api/v1/auth", auth);
   app.use("/auth", authClient);
+  app.use("/api/v1/classes", classRouter);
   Api(app, {
     model: Class,
-    modelName: "classe",
+    modelName: "classes",
     routePrefix: "/api/v1",
     preMiddleware: [protect],
   });

@@ -1,9 +1,16 @@
-import { TextInput, PasswordInput, Paper, Button, Loader } from "@mantine/core";
+import {
+  TextInput,
+  PasswordInput,
+  Paper,
+  Button,
+  Loader,
+  Text,
+} from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { isValidEmail, isValidPassword } from "../../../utils/validate";
 import { useRouter } from "next/router";
 import { useDisclosure } from "@mantine/hooks";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { loginService } from "../../../services/auth";
 import { ApiResponse } from "../../../interfaces/Response";
 import useAuth from "../../Auth";
@@ -26,8 +33,14 @@ export default function LoginFormFields() {
   const router = useRouter();
   const [loading, loadingHandlers] = useDisclosure(false);
   const [error, setError] = useState("");
-  const { setToken } = useAuth();
+  const { setToken, isLoggedIn } = useAuth();
   const { getPreferredUserMode } = useMode();
+
+  useEffect(() => {
+    if (isLoggedIn()) {
+      router.push("/app/" + getPreferredUserMode() + "/classes");
+    }
+  }, [isLoggedIn]);
 
   const onSubmit = async () => {
     if (form.isValid()) {
@@ -81,6 +94,11 @@ export default function LoginFormFields() {
           mt="md"
           {...form.getInputProps("password")}
         />
+
+        <Text mt="md" color="red">
+          {error}
+        </Text>
+
         <Button fullWidth mt="xl" type="submit" disabled={loading}>
           {loading ? <Loader size={16} /> : "Login"}
         </Button>

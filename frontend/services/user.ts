@@ -1,15 +1,22 @@
 import axios from "axios";
 import { apiUrl } from "./index";
 
-export const getUserById = async (userId: string, token: string) => {
+export interface User {
+  name: string;
+  createdAt: Date;
+  email: string;
+  _id: string;
+}
+
+export const getLoggedInUser = async (token: string) => {
   try {
-    const res = await axios.get(`${apiUrl}/user/${userId}`, {
+    const res = await axios.get(`${apiUrl}/auth/me`, {
       headers: {
         Authorization: "Bearer " + token,
       },
     });
 
-    if (!res) throw new Error("Signup failed.");
+    if (!res) throw new Error("Failed to get user data.");
 
     return res.data;
   } catch (error: Error | unknown) {

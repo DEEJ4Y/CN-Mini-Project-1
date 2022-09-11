@@ -7,7 +7,6 @@ export default function useAuth() {
 
   useEffect(() => {
     const userToken = window.localStorage.getItem("t");
-
     if (!userToken) {
       if (router.pathname.startsWith("/app")) {
         router.push("/login", { query: { redirect: router.pathname } });
@@ -15,7 +14,7 @@ export default function useAuth() {
     } else {
       setUserToken(() => userToken);
     }
-  }, [router, router.pathname]);
+  }, [router, token, setUserToken]);
 
   const setToken = (_token: string) => {
     window.localStorage.setItem("t", _token);
@@ -37,5 +36,13 @@ export default function useAuth() {
     router.push("/login");
   };
 
-  return { token, setToken, isLoggedIn, logout };
+  const getUserToken = () => {
+    const userToken = window.localStorage.getItem("t");
+
+    setUserToken(() => userToken);
+
+    return userToken;
+  };
+
+  return { token, setToken, isLoggedIn, logout, getUserToken };
 }

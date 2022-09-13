@@ -22,8 +22,10 @@ export default function JoinClassAsStudent() {
 
       setLoading("success");
       queryClient.invalidateQueries(["teacher", "class", router.query.c]);
+      queryClient.invalidateQueries(["student", "classes"]);
       router.push(`/app/student/classes/view?c=${router.query.c}`);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router.isReady]);
 
   if (loading === "loading") {

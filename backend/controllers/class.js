@@ -8,13 +8,36 @@ const {
   updateOneByIdService,
 } = require("emfrest");
 const Class = require("../models/Class");
-const { getClassById } = require("../services/class");
+const {
+  getClassById,
+  getStudentFieldResponses,
+  getStudentClassById,
+} = require("../services/class");
 
 exports.getAllClassesTeacher = asyncMiddlewareHandler(
   async (req, res, next) => {
     const userId = req.user.id;
 
     const classes = await getAllService(Class, { teachers: userId });
+
+    if (!classes) {
+      return next(new ErrorResponse("Failed to retrieve classes", 404));
+    }
+
+    successfulResponse(
+      res,
+      200,
+      "The classes were successfully found",
+      classes
+    );
+  }
+);
+
+exports.getAllClassesStudent = asyncMiddlewareHandler(
+  async (req, res, next) => {
+    const userId = req.user.id;
+
+    const classes = await getAllService(Class, { students: userId });
 
     if (!classes) {
       return next(new ErrorResponse("Failed to retrieve classes", 404));
@@ -64,6 +87,34 @@ exports.getClassById = asyncMiddlewareHandler(async (req, res, next) => {
   }
 
   successfulResponse(res, 200, "The class was successfully found", _class);
+});
+
+exports.getStudentClassById = asyncMiddlewareHandler(async (req, res, next) => {
+  const userId = req.user.id;
+  const classId = req.params.classId;
+
+  if (!classId || classId === "null" || classId === "undefined") {
+    return next(new ErrorResponse("Add a class id", 400));
+  }
+
+  const _class = await getStudentClassById(classId);
+  const fieldResponses = await getStudentFieldResponses(userId, classId);
+
+  if (!_class || !fieldResponses) {
+    return next(new ErrorResponse("Failed to fetch class", 404));
+  }
+
+  if (
+    _class.teachers.find((user) => user.id === userId) === undefined &&
+    _class.students.find((user) => user.id === userId) === undefined
+  ) {
+    return next(new ErrorResponse("Not allowed to view class", 403));
+  }
+
+  successfulResponse(res, 200, "The class was successfully found", {
+    ..._class,
+    dataFieldResponses: fieldResponses,
+  });
 });
 
 exports.addStudentToClass = asyncMiddlewareHandler(async (req, res, next) => {

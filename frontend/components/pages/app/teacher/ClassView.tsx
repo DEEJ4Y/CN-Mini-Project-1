@@ -1,11 +1,17 @@
-import { Title, Text, Loader, Button, Grid } from "@mantine/core";
+import { Title, Text, Loader, Button, Table } from "@mantine/core";
 import { useRouter } from "next/router";
 import { useQuery } from "@tanstack/react-query";
-import { Class, getClassById } from "../../../../services/class";
+import {
+  Class,
+  ClassData,
+  getClassById,
+  ClassDataResponse,
+} from "../../../../services/class";
 import useAuth from "../../../Auth";
 import { useEffect, useState } from "react";
-import { UserPlus } from "tabler-icons-react";
+import { FilePlus, UserPlus } from "tabler-icons-react";
 import Link from "next/link";
+import { User } from "../../../../services/user";
 
 export default function TeacherClassView() {
   const router = useRouter();
@@ -20,6 +26,7 @@ export default function TeacherClassView() {
         setClassId(() => _classId as string);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router.isReady]);
 
   const { isLoading, isError, data } = useQuery(
@@ -46,7 +53,7 @@ export default function TeacherClassView() {
     );
   }
 
-  // console.log(data);
+  // console.log(data.data);
 
   const _class = data.data as Class;
   return (
@@ -62,33 +69,64 @@ export default function TeacherClassView() {
         passHref
         href={`/app/teacher/classes/invite/student?c=${_class._id}`}
       >
-        <Button variant="gradient" mt="sm" leftIcon={<UserPlus size={20} />}>
+        <Button variant="outline" mt="sm" leftIcon={<UserPlus size={20} />}>
           Invite Student
         </Button>
       </Link>
 
-      <Grid mt="md">
-        <Grid.Col lg={6}>
-          <Text weight="bold">
-            Students
-            <span style={{ fontWeight: "lighter" }}>
-              {" "}
-              {_class.students.length}
-            </span>
-          </Text>
-          {_class.students.length > 0 ? (
-            <ol>
-              {_class.students.map(({ name, _id, email }) => (
-                <li key={`class-${classId}-student-${_id}`}>
-                  {name} : {email}
-                </li>
+      <Title mt="lg" order={2}>
+        Students
+      </Title>
+      <Text mb="xs">
+        Total:
+        <span style={{ fontWeight: "lighter" }}> {_class.students.length}</span>
+      </Text>
+
+      <Link passHref href={`/app/teacher/classes/add-field?c=${_class._id}`}>
+        <Button leftIcon={<FilePlus size={20} />}>Add Field</Button>
+      </Link>
+
+      {_class.students.length > 0 ? (
+        <Table horizontalSpacing="xs">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email ID</th>
+              {_class.dataFields.map(({ _id, key }: ClassData) => (
+                <th key={_id}>{key}</th>
               ))}
-            </ol>
-          ) : (
-            <Text>There are currently no students in this class.</Text>
-          )}
-        </Grid.Col>
-      </Grid>
+            </tr>
+          </thead>
+          <tbody>
+            {_class.students.map(({ name, _id, email }: User) => (
+              <tr key={`row-${_id}`}>
+                <td>{name}</td>
+                <td>{email}</td>
+                {_class.dataFields.map((classData: ClassData) => {
+                  const found = _class.dataFieldResponses.find(
+                    ({ fieldId, userId }: ClassDataResponse) => {
+                      if (fieldId === classData._id && userId === _id) {
+                        return true;
+                      }
+
+                      return false;
+                    }
+                  );
+
+                  if (found) {
+                    console.log(found);
+                    return <td key={found._id}>{found.value}</td>;
+                  }
+
+                  return <td key={_id + classData._id}>-</td>;
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      ) : (
+        <Text>There are currently no students in this class.</Text>
+      )}
     </>
   );
 }

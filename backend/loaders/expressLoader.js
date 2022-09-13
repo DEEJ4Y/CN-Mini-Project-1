@@ -25,6 +25,8 @@ const Class = require("../models/Class");
 const auth = require("../routes/auth");
 const authClient = require("../routes/authClient");
 const classRouter = require("../routes/class");
+const ClassData = require("../models/ClassData");
+const ClassDataResponse = require("../models/ClassDataResponse");
 
 module.exports = (app) => {
   // cors
@@ -75,6 +77,18 @@ module.exports = (app) => {
   // Mount routers
   app.use("/api/v1/auth", auth);
   app.use("/auth", authClient);
+  Api(app, {
+    model: ClassData,
+    modelName: "datafield",
+    routePrefix: "/api/v1",
+    preMiddleware: [protect],
+  });
+  Api(app, {
+    model: ClassDataResponse,
+    modelName: "user-response",
+    routePrefix: "/api/v1",
+    preMiddleware: [protect],
+  });
   app.use("/api/v1/classes", classRouter);
   Api(app, {
     model: Class,

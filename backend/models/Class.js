@@ -17,12 +17,6 @@ const ClassSchema = new mongoose.Schema(
         default: [],
       },
     ],
-    invitedTeachers: [
-      {
-        type: String,
-        default: [],
-      },
-    ],
     students: [
       {
         type: mongoose.Schema.Types.ObjectId,
@@ -30,14 +24,22 @@ const ClassSchema = new mongoose.Schema(
         default: [],
       },
     ],
-    invitedStudents: [
-      {
-        type: String,
-        default: [],
-      },
-    ],
   },
   { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
+
+ClassSchema.virtual("dataFields", {
+  ref: "ClassData",
+  localField: "_id",
+  foreignField: "classId",
+  justOne: false,
+});
+
+ClassSchema.virtual("dataFieldResponses", {
+  ref: "ClassDataResponse",
+  localField: "_id",
+  foreignField: "classId",
+  justOne: false,
+});
 
 module.exports = mongoose.model("Class", ClassSchema);

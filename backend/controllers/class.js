@@ -5,6 +5,7 @@ const {
   asyncMiddlewareHandler,
   createResourceService,
   getOneByIdService,
+  updateOneByIdService,
 } = require("emfrest");
 const Class = require("../models/Class");
 const { getClassById } = require("../services/class");
@@ -63,4 +64,37 @@ exports.getClassById = asyncMiddlewareHandler(async (req, res, next) => {
   }
 
   successfulResponse(res, 200, "The class was successfully found", _class);
+});
+
+exports.addStudentToClass = asyncMiddlewareHandler(async (req, res, next) => {
+  const studentId = req.user.id;
+  const classId = req.params.classId;
+
+  if (!classId || classId === "null" || classId === "undefined") {
+    return next(new ErrorResponse("Add a class id", 400));
+  }
+
+  const _class = await getOneByIdService(Class, classId);
+
+  if (!_class) {
+    return next(new ErrorResponse("Failed to fetch class", 404));
+  }
+
+  if (!_class.students.includes(studentId)) {
+    const updatedStudents = [..._class.students, studentId];
+
+    const updatedClass = await updateOneByIdService(Class, classId, {
+      students: updatedStudents,
+    });
+
+    if (!updatedClass) {
+      return next(new ErrorResponse("Failed to update class", 404));
+    }
+  }
+
+  successfulResponse(
+    res,
+    200,
+    "The student was added to the class successfully."
+  );
 });

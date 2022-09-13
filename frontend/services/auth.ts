@@ -2,6 +2,7 @@ import axios from "axios";
 import { apiUrl } from "./index";
 
 export const signupService = async (data: object) => {
+  if (!data) return null;
   try {
     const res = await axios.post(`${apiUrl}/auth/register`, data);
 
@@ -17,6 +18,8 @@ export const signupService = async (data: object) => {
 };
 
 export const loginService = async (data: object) => {
+  if (!data) return null;
+
   try {
     const res = await axios.post(`${apiUrl}/auth/login`, data);
 

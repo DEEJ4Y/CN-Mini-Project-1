@@ -5,6 +5,7 @@ import { Class, getClassById } from "../../../../services/class";
 import useAuth from "../../../Auth";
 import { useEffect, useState } from "react";
 import { UserPlus } from "tabler-icons-react";
+import Link from "next/link";
 
 export default function TeacherClassView() {
   const router = useRouter();
@@ -45,7 +46,7 @@ export default function TeacherClassView() {
     );
   }
 
-  console.log(data);
+  // console.log(data);
 
   const _class = data.data as Class;
   return (
@@ -57,17 +58,30 @@ export default function TeacherClassView() {
         {_class.teachers.map(({ name }) => name).join(", ")}
       </Text>
 
-      <Button variant="gradient" mt="sm" leftIcon={<UserPlus size={20} />}>
-        Add Student
-      </Button>
+      <Link
+        passHref
+        href={`/app/teacher/classes/invite/student?c=${_class._id}`}
+      >
+        <Button variant="gradient" mt="sm" leftIcon={<UserPlus size={20} />}>
+          Invite Student
+        </Button>
+      </Link>
 
       <Grid mt="md">
         <Grid.Col lg={6}>
-          <Text weight="bold">Students</Text>
+          <Text weight="bold">
+            Students
+            <span style={{ fontWeight: "lighter" }}>
+              {" "}
+              {_class.students.length}
+            </span>
+          </Text>
           {_class.students.length > 0 ? (
             <ol>
-              {_class.students.map(({ name, _id }) => (
-                <li key={`class-${classId}-student-${_id}`}>{name}</li>
+              {_class.students.map(({ name, _id, email }) => (
+                <li key={`class-${classId}-student-${_id}`}>
+                  {name} : {email}
+                </li>
               ))}
             </ol>
           ) : (

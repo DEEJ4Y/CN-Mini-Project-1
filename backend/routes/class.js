@@ -4,6 +4,7 @@ const {
   getAllClassesTeacher,
   createClass,
   getClassById,
+  addStudentToClass,
 } = require("../controllers/class");
 const { protect } = require("../middleware/auth");
 const Class = require("../models/Class");
@@ -17,5 +18,9 @@ router
 router
   .route("/:classId")
   .get(appendModelData(Class, "class"), protect, getClassById);
+
+router
+  .route("/:classId/join-student")
+  .get(appendModelData(Class, "class"), protect, addStudentToClass);
 
 module.exports = router;

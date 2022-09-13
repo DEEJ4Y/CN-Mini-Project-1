@@ -9,6 +9,8 @@ export interface User {
 }
 
 export const getLoggedInUser = async (token: string) => {
+  if (!token) return null;
+
   try {
     const res = await axios.get(`${apiUrl}/auth/me`, {
       headers: {

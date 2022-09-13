@@ -19,8 +19,7 @@ const ClassSchema = new mongoose.Schema(
     ],
     invitedTeachers: [
       {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
+        type: String,
         default: [],
       },
     ],
@@ -33,8 +32,7 @@ const ClassSchema = new mongoose.Schema(
     ],
     invitedStudents: [
       {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
+        type: String,
         default: [],
       },
     ],

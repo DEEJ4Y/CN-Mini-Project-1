@@ -12,6 +12,7 @@ import useAuth from "../../../Auth";
 import { useEffect, useState } from "react";
 import { User } from "../../../../interfaces/User";
 import Link from "next/link";
+import { getMeService } from "../../../../services/auth";
 
 export const getFieldDataById = (
   fieldData: ClassData[],
@@ -47,7 +48,9 @@ export default function StudentClassViewComponent() {
     () => getClassById(getUserToken() as string, classId as string)
   );
 
-  if (isLoading) {
+  const user = useQuery(["user"], () => getMeService(getUserToken() as string));
+
+  if (isLoading || user.isLoading) {
     return (
       <>
         <Title>My Class</Title>
@@ -57,7 +60,7 @@ export default function StudentClassViewComponent() {
     );
   }
 
-  if (isError || !data) {
+  if (isError || !data || user.isError || !user?.data) {
     return (
       <>
         <Title>Oops!</Title>
@@ -66,7 +69,13 @@ export default function StudentClassViewComponent() {
     );
   }
 
-  const { dataFields, dataFieldResponses, name, teachers } = data.data;
+  let { dataFields, dataFieldResponses, name, teachers } = data.data;
+
+  dataFieldResponses = dataFieldResponses.filter(
+    (response: ClassDataResponse) => {
+      return response.userId === user.data.data._id;
+    }
+  );
 
   const dataFieldsWithResponses: ClassDataWithUserResponse[] = dataFields.map(
     (dataField: ClassData) => {
@@ -112,7 +121,6 @@ export default function StudentClassViewComponent() {
             valueType,
             _id,
             userResponseDocument,
-            userResponseValue,
           }: ClassDataWithUserResponse,
           idx: number
         ) => {

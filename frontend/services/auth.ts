@@ -33,3 +33,23 @@ export const loginService = async (data: object) => {
     return error;
   }
 };
+
+export const getMeService = async (token: string) => {
+  if (!token) return null;
+  try {
+    const res = await axios.get(`${apiUrl}/api/v1/auth/me`, {
+      headers: {
+        authorization: "Bearer " + token,
+      },
+    });
+
+    if (!res) throw new Error("Failed to get user data.");
+
+    return res.data;
+  } catch (error: Error | unknown) {
+    if (error instanceof Error) {
+      console.log(error.message);
+    }
+    return error;
+  }
+};

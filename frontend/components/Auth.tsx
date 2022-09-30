@@ -1,5 +1,6 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { queryClient } from "../pages/_app";
 
 export default function useAuth() {
   const router = useRouter();
@@ -32,6 +33,9 @@ export default function useAuth() {
     window.localStorage.removeItem("t");
 
     setUserToken(() => null);
+    queryClient.invalidateQueries(["user"]);
+    queryClient.invalidateQueries(["student"]);
+    queryClient.invalidateQueries(["teacher"]);
 
     router.push("/login");
   };

@@ -20,13 +20,15 @@ const errorHandler = require("../middleware/error");
 // Models
 const User = require("../models/User");
 const Class = require("../models/Class");
+const ClassData = require("../models/ClassData");
+const ClassDataResponse = require("../models/ClassDataResponse");
 
 // Bring in route files
 const auth = require("../routes/auth");
 const authClient = require("../routes/authClient");
 const classRouter = require("../routes/class");
-const ClassData = require("../models/ClassData");
-const ClassDataResponse = require("../models/ClassDataResponse");
+const classDataFieldRouter = require("../routes/classDataFields");
+const classDataFieldResponseRouter = require("../routes/classDataFieldResponse");
 
 module.exports = (app) => {
   // cors
@@ -77,29 +79,23 @@ module.exports = (app) => {
   // Mount routers
   app.use("/api/v1/auth", auth);
   app.use("/auth", authClient);
-  Api(app, {
-    model: ClassData,
-    modelName: "datafield",
-    routePrefix: "/api/v1",
-    preMiddleware: [protect],
-  });
+  app.use("/datafields", classDataFieldRouter);
+  app.use("/responses", classDataFieldResponseRouter);
   Api(app, {
     model: ClassDataResponse,
     modelName: "user-response",
-    routePrefix: "/api/v1",
+    routePrefix: "/response",
     preMiddleware: [protect],
   });
-  app.use("/api/v1/classes", classRouter);
+  app.use("/classes", classRouter);
   Api(app, {
     model: Class,
-    modelName: "classes",
-    routePrefix: "/api/v1",
+    modelName: "classe",
     preMiddleware: [protect],
   });
   Api(app, {
     model: User,
     modelName: "user",
-    routePrefix: "/api/v1",
     preMiddleware: [protect],
   });
 

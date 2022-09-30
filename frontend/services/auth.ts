@@ -4,7 +4,7 @@ import { apiUrl } from "./index";
 export const signupService = async (data: object) => {
   if (!data) return null;
   try {
-    const res = await axios.post(`${apiUrl}/auth/register`, data);
+    const res = await axios.post(`${apiUrl}/api/v1/auth/register`, data);
 
     if (!res) throw new Error("Signup failed.");
 
@@ -21,7 +21,7 @@ export const loginService = async (data: object) => {
   if (!data) return null;
 
   try {
-    const res = await axios.post(`${apiUrl}/auth/login`, data);
+    const res = await axios.post(`${apiUrl}/api/v1/auth/login`, data);
 
     if (!res) throw new Error("Login failed.");
 

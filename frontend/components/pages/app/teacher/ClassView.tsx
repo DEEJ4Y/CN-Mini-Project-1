@@ -1,4 +1,4 @@
-import { Title, Text, Loader, Button, Table } from "@mantine/core";
+import { Title, Text, Loader, Button, Table, ScrollArea } from "@mantine/core";
 import { useRouter } from "next/router";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -87,43 +87,45 @@ export default function TeacherClassView() {
       </Link>
 
       {_class.students.length > 0 ? (
-        <Table horizontalSpacing="xs">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Email ID</th>
-              {_class.dataFields.map(({ _id, key }: ClassData) => (
-                <th key={_id}>{key}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {_class.students.map(({ name, _id, email }: User) => (
-              <tr key={`row-${_id}`}>
-                <td>{name}</td>
-                <td>{email}</td>
-                {_class.dataFields.map((classData: ClassData) => {
-                  const found = _class.dataFieldResponses.find(
-                    ({ fieldId, userId }: ClassDataResponse) => {
-                      if (fieldId === classData._id && userId === _id) {
-                        return true;
-                      }
-
-                      return false;
-                    }
-                  );
-
-                  if (found) {
-                    console.log(found);
-                    return <td key={found._id}>{found.value}</td>;
-                  }
-
-                  return <td key={_id + classData._id}>-</td>;
-                })}
+        <ScrollArea type="always" offsetScrollbars>
+          <Table horizontalSpacing="xs">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email ID</th>
+                {_class.dataFields.map(({ _id, key }: ClassData) => (
+                  <th key={_id}>{key}</th>
+                ))}
               </tr>
-            ))}
-          </tbody>
-        </Table>
+            </thead>
+            <tbody>
+              {_class.students.map(({ name, _id, email }: User) => (
+                <tr key={`row-${_id}`}>
+                  <td>{name}</td>
+                  <td>{email}</td>
+                  {_class.dataFields.map((classData: ClassData) => {
+                    const found = _class.dataFieldResponses.find(
+                      ({ fieldId, userId }: ClassDataResponse) => {
+                        if (fieldId === classData._id && userId === _id) {
+                          return true;
+                        }
+
+                        return false;
+                      }
+                    );
+
+                    if (found) {
+                      // console.log(found);
+                      return <td key={found._id}>{found.value}</td>;
+                    }
+
+                    return <td key={_id + classData._id}>-</td>;
+                  })}
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </ScrollArea>
       ) : (
         <Text>There are currently no students in this class.</Text>
       )}

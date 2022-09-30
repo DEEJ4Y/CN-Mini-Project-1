@@ -16,7 +16,7 @@
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
     "dotenv": "^9.0.0",
-    "emfrest": "^1.1.1",
+    "emfrest": "^1.1.2",
     "express": "^4.17.1",
     "express-fileupload": "^1.2.1",
     "express-mongo-sanitize": "^2.0.2",

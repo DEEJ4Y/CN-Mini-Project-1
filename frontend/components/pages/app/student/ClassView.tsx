@@ -1,16 +1,17 @@
-import { Title, Text, Loader, TextInput } from "@mantine/core";
+import { Title, Text, Loader, TextInput, Button } from "@mantine/core";
 import { useRouter } from "next/router";
 import { useQuery } from "@tanstack/react-query";
 import {
-  Class,
   ClassData,
   ClassDataResponse,
+  classDataValueTypeToInputType,
+  ClassDataWithUserResponse,
   getClassById,
 } from "../../../../services/class";
 import useAuth from "../../../Auth";
 import { useEffect, useState } from "react";
-import { useForm } from "@mantine/form";
-import { stringIsEmpty } from "../../../../utils/validate";
+import { User } from "../../../../interfaces/User";
+import Link from "next/link";
 
 export const getFieldDataById = (
   fieldData: ClassData[],
@@ -46,37 +47,6 @@ export default function StudentClassViewComponent() {
     () => getClassById(getUserToken() as string, classId as string)
   );
 
-  const userResponses: ClassDataResponse[] =
-    data?.data?.dataFieldResponses || [];
-  const dataFields: ClassData[] = data?.data?.dataFields || [];
-  let dataFieldsObj: any = {};
-  let dataFieldValidators: any = {};
-
-  dataFields.forEach(({ key, valueType }: ClassData) => {
-    if (valueType === "Number") {
-      dataFieldsObj[key] = 0;
-      dataFieldValidators[key] = (v: any) =>
-        isNaN(v) ? "Please enter a valid " + key : null;
-    } else if (valueType === "Text") {
-      dataFieldsObj[key] = "";
-      dataFieldValidators[key] = (v: any) =>
-        stringIsEmpty(v) || v === undefined || v === null
-          ? "Please enter a valid " + key
-          : null;
-    }
-  });
-
-  userResponses.forEach(({}: ClassDataResponse) => {});
-
-  const form = useForm({
-    initialValues: {
-      ...dataFieldsObj,
-    },
-    validate: {
-      ...dataFieldValidators,
-    },
-  });
-
   if (isLoading) {
     return (
       <>
@@ -96,37 +66,94 @@ export default function StudentClassViewComponent() {
     );
   }
 
-  console.log(data.data, form.values);
+  const { dataFields, dataFieldResponses, name, teachers } = data.data;
 
-  const _class = data.data as Class;
+  const dataFieldsWithResponses: ClassDataWithUserResponse[] = dataFields.map(
+    (dataField: ClassData) => {
+      const userResponseDocument: ClassDataResponse | undefined =
+        dataFieldResponses.find(
+          (response: ClassDataResponse) => response.fieldId === dataField._id
+        );
+
+      const userResponseValue = userResponseDocument
+        ? userResponseDocument.value
+        : dataField.valueType === "Number"
+        ? 0
+        : "";
+
+      return {
+        ...dataField,
+        userResponseDocument,
+        userResponseValue,
+      };
+    }
+  );
+
+  // console.log(dataFieldResponses);
+
   return (
-    <form onBlur={form.validate}>
-      <div>
-        <Title>{_class.name}</Title>
-        <Text>
-          Teacher{_class.teachers.length > 1 ? "s" : ""}:{" "}
-          {_class.teachers.map(({ name }) => name).join(", ")}
-        </Text>
-        <Text mt="md">
-          Your teacher has requested the following data from you:{" "}
-        </Text>
-        {dataFields.map((dataField: ClassData) => {
-          let type = "text";
-          if (dataField.valueType === "Number") {
-            type = "number";
-          }
+    <div>
+      <Title>{name}</Title>
 
+      <Text>
+        <strong>Teacher{teachers.length > 1 ? "s" : ""}</strong>:{" "}
+        {teachers.map(({ name }: User) => name).join(", ")}
+      </Text>
+
+      <Text mb="md">
+        Your teacher{teachers.length > 1 ? "s have" : " has"} requested the
+        following information from you.{" "}
+      </Text>
+
+      {dataFieldsWithResponses.map(
+        (
+          {
+            key,
+            valueType,
+            _id,
+            userResponseDocument,
+            userResponseValue,
+          }: ClassDataWithUserResponse,
+          idx: number
+        ) => {
           return (
-            <TextInput
-              {...form.getInputProps(dataField.key)}
-              mt="sm"
-              label={dataField.key}
-              key={`response-${dataField._id}`}
-              type={type}
-            />
+            <div key={`data-field-${idx}`} style={{ position: "relative" }}>
+              {/* c = classId
+                  d = data field id
+                  r = valid response
+                  ur = user response id
+                   */}
+              <Link
+                passHref
+                href={`/app/student/classes/edit?c=${
+                  router.query.c
+                }&d=${_id}&r=${!!userResponseDocument ? true : false}&ur=${
+                  userResponseDocument?._id
+                }`}
+              >
+                <Button
+                  size="xs"
+                  style={{
+                    position: "absolute",
+                    right: "4px",
+                    bottom: "3px",
+                    zIndex: 1,
+                  }}
+                >
+                  Edit
+                </Button>
+              </Link>
+              <TextInput
+                label={key}
+                type={classDataValueTypeToInputType[valueType]}
+                mb="sm"
+                value={userResponseDocument?.value}
+                disabled
+              />
+            </div>
           );
-        })}
-      </div>
-    </form>
+        }
+      )}
+    </div>
   );
 }

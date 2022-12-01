@@ -11,8 +11,8 @@ Teacher's have the tough job of managing all the data regarding their students. 
 This project aims to help a teacher keep track of their student data in a single place. All the students in the class have their own account. Each of the students is responsible for maintaining their student information and ensuring it is correct. Teachers are able to download the student data in Excel format whenever they need. Students do not have to keep sending their data and teachers don't have to ask for it. One less thing for teachers to worry about.
 
 ## Our team
-
-- Mohit Sharma: RA2011032010004
+CSE w/s IOT (P1)
+- Mohit Sharma: RA2011032010004 
 - David Joseph: RA2011032010005
 - Deeptadip Mondal: RA2011032010011
 - Gautham D: RA2011032010029
